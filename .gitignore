@@ -1,0 +1,4 @@
+build
+.vscode
+jsoncpp-master
+*.code-workspace

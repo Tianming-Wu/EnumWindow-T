@@ -1,0 +1,7 @@
+{
+	"EnableBlockList" : true,
+	"PropertyWindow": {
+		"AutoUpdateEnabled": true,
+		"AutoUpdateInterval": 500
+	}
+}

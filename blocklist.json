@@ -1,0 +1,13 @@
+{
+	"blocklist" : 
+	{
+		"WindowClass" : 
+		[
+			"ComboLBox",
+			"tooltip_class32",
+			"WorkerW",
+			"IME"
+		],
+		"WindowTitle" : []
+	}
+}

@@ -1,0 +1,64 @@
+#include "menu_items.h"
+
+IDM_MAINMENU MENU
+{
+    POPUP "internal-menu-0"
+    {
+        MENUITEM "属性(&P)", IDM_PROPERTY
+        MENUITEM SEPARATOR
+        MENUITEM "显示位置(&L)", IDM_SHOWPOSITION, GRAYED
+        MENUITEM "切换至(&S)", IDM_SWITCHTO
+        MENUITEM "移至中心(&C)", IDM_MOVETOCENTER, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "显示该进程的其他窗口", IDM_SHOW_OTHER_WINDOWS, GRAYED
+        MENUITEM "全部展开(&U)", IDM_EXPAND_ALL
+        MENUITEM "全部折叠(&F)",  IDM_COLLAPSE_ALL
+        MENUITEM SEPARATOR
+        POPUP "忽略(&I)"
+        {
+            MENUITEM "本次忽略窗口类(&I)", IDM_IGNORE_CLASS_THIS
+            MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_CLASS_PERMANENT
+            MENUITEM "本次忽略标题(&I)", IDM_IGNORE_TITLE_THIS
+            MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_TITLE_PERMANENT
+        }
+    }
+}
+
+IDW_MENU MENU
+{
+    POPUP "列表(&L)"
+    {
+        MENUITEM "刷新列表(F5)", IDW_REFRESHLIST
+        MENUITEM SEPARATOR
+        MENUITEM "重新启动应用(&Q)", IDW_RESTART, GRAYED
+        MENUITEM "退出(&X)", IDW_EXITPROGRAM
+    }
+    MENUITEM "查找窗口(&F)", IDW_FINDWINDOW
+    MENUITEM "搜索窗口(&S)", IDW_SEARCHWINDOW
+    POPUP "忽略(&I)"
+    {
+        MENUITEM "黑名单设置(&B)", IDW_BLACKLIST_SETTINGS, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "启用黑名单(&T)", IDW_BLACKLIST_ENABLED
+    }
+    POPUP "属性(&P)"
+    {
+        MENUITEM "属性(&P)", IDW_PROPERTY
+        MENUITEM SEPARATOR
+        MENUITEM "自动刷新(&U)", IDW_AUTOUPDATE
+        POPUP "自动刷新间隔(&I)"
+        {
+            MENUITEM "50ms", IDW_AUINTERVAL50MS
+            MENUITEM "100ms", IDW_AUINTERVAL100MS
+            MENUITEM "500ms", IDW_AUINTERVAL500MS
+            MENUITEM "1000ms", IDW_AUINTERVAL1000MS
+            MENUITEM "5000ms", IDW_AUINTERVAL5000MS
+            MENUITEM "...", IDW_AUINTERVALCUSTOM
+        }
+    }
+    POPUP "关于(&A)", GRAYED
+    {
+        MENUITEM "关于(&A)", IDW_ABOUT
+        MENUITEM "帮助(&H)", IDW_HELP
+    }
+}
