@@ -32,7 +32,7 @@ jobs:
       - name: Prepare package directory
         run: |
           mkdir release
-          cp build/Release/WindowControlEx.exe release/
+          cp build/bin/Release/WindowControlEx.exe release/
           cp blocklist.json release/
           cp config.json release/
         shell: bash
