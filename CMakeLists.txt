@@ -25,8 +25,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(JSONCPP_WITH_TESTS "Build jsoncpp tests" OFF)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/jsoncpp-master)
-include_directories(${CMAKE_SOURCE_DIR}/jsoncpp-master/include)
+include(FetchContent)
+FetchContent_Declare(
+  jsoncpp
+  GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
+  GIT_TAG        1.9.5  # or latest stable
+)
+
+FetchContent_MakeAvailable(jsoncpp)
 
 add_executable(WindowControlEx ${PROJECT_SOURCES})
 
