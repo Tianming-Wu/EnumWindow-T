@@ -1,4 +1,5 @@
 #pragma once
+#include "PublicDefs.hpp"
 
 #define PWH_IDS_STATUSBAR               4970
 
@@ -34,6 +35,3 @@
 // Error Codes
 #define APPLYERR_RESIZEFAILED           0x01 // 00000001
 #define APPLYERR_SETTEXTFAILED          0x02 // 00000010
-
-//Window Messages
-#define WM_PW_CONFIGUPD                 WM_USER+32

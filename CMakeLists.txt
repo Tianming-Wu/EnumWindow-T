@@ -9,13 +9,14 @@ project(
 
 set(PROJECT_SOURCES
     WindowControlEx.cpp WindowControlEx.h
-    ScanThread.hpp
+    ScanThread.hpp ScanThread.cpp
     blocklist_fx.h blocklist_fx.cpp
     toolset.h toolset.cpp
     config.h config.cpp
-    PropertyWindow.hpp PropertyWindowIDs.h
-    FindWindow.hpp FindWindowIDs.h
-    RMenuProcessor.hpp
+    PropertyWindow.hpp PropertyWindowIDs.h PropertyWindow.cpp
+    FindWindow.hpp FindWindowIDs.h FindWindow.cpp
+    SearchWindow.hpp SearchWindowIDs.hpp SearchWindow.cpp
+    RMenuProcessor.hpp RMenuProcessor.cpp
     WindowOperations.hpp
     menu.rc menu_items.h
 )

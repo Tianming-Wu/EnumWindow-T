@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpWCmdLin
 {
     g_hInstance = hInstance;
     InitCommonControls();
-    InitPropertyWindow();
+    // InitPropertyWindow(); // No longer valid
 
     WNDCLASSEX wcex = { 0 };
     wcex.cbSize = sizeof(WNDCLASSEX);
