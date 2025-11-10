@@ -21,6 +21,7 @@ public:
 private:
     void parse();
     void compile();
+    void write_default();
 
 public:
     // --Values

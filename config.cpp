@@ -8,7 +8,7 @@ void _Config::setFileName(std::string& _filename) {
 
 void _Config::load() {
     std::ifstream file(filename);
-    if(file.bad()) save();
+    if(file.bad()) write_default();
     file.open(filename);
     file >> root;
     file.close();
@@ -44,4 +44,9 @@ void _Config::compile() {
     root["MaxPathLength"] = MaxPathLength;
     root["PropertyWindow"]["AutoUpdateEnabled"] = PropertyWindow.AutoUpdateEnabled;
     root["PropertyWindow"]["AutoUpdateInterval"] = PropertyWindow.AutoUpdateInterval;
+}
+
+void _Config::write_default()
+{
+    ///TODO: write default configuration file.
 }

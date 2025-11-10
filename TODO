@@ -1,2 +1,4 @@
 
 [Complete] F:\.VsCodePortable\Projects\EnumWindow T\RMenuProcessor.hpp(94): 在PropertyWindow中加入更新用的代码响应这个更改。
+
+[bug] 子窗口坐标修改，异常变为相对坐标并进行叠加

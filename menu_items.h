@@ -21,25 +21,28 @@
 //WINDOW MENU
 #define IDW_MENU                            2001
 
-#define IDW_REFRESHLIST                     2002
-#define IDW_RESTART                         2005
-#define IDW_EXITPROGRAM                     2006
+#define IDW_RESTART                         2002
+#define IDW_EXITPROGRAM                     2003
 
-#define IDW_FINDWINDOW                      2012
-#define IDW_SEARCHWINDOW                    2013
+#define IDW_REFRESHLIST                     2011
+#define IDW_EXPAND_ALL                      2012
+#define IDW_COLLAPSE_ALL                    2013
 
-#define IDW_BLACKLIST_SETTINGS              2021
-#define IDW_BLACKLIST_ENABLED               2022
+#define IDW_FINDWINDOW                      2022
+#define IDW_SEARCHWINDOW                    2023
 
-#define IDW_PROPERTY                        2031
+#define IDW_BLACKLIST_SETTINGS              2031
+#define IDW_BLACKLIST_ENABLED               2032
 
-#define IDW_AUTOUPDATE                      2032
-#define IDW_AUINTERVAL50MS                  2043
-#define IDW_AUINTERVAL100MS                 2044
-#define IDW_AUINTERVAL500MS                 2045
-#define IDW_AUINTERVAL1000MS                2046
-#define IDW_AUINTERVAL5000MS                2047
-#define IDW_AUINTERVALCUSTOM                2048
+#define IDW_PROPERTY                        2041
+
+#define IDW_AUTOUPDATE                      2052
+#define IDW_AUINTERVAL50MS                  2053
+#define IDW_AUINTERVAL100MS                 2054
+#define IDW_AUINTERVAL500MS                 2055
+#define IDW_AUINTERVAL1000MS                2056
+#define IDW_AUINTERVAL5000MS                2057
+#define IDW_AUINTERVALCUSTOM                2058
 
 #define IDW_ABOUT                           2080
 #define IDW_HELP                            2081

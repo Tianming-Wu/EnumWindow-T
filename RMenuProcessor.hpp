@@ -1,3 +1,6 @@
+/*
+    This file handles the right click menu and the static menubar.
+*/
 #pragma once
 
 #include <windows.h>
@@ -10,6 +13,7 @@
 
 #include "PropertyWindow.hpp"
 #include "FindWindow.hpp"
+#include "SearchWindow.hpp"
 //#include "WindowOperations.hpp"
 #include "ScanThread.hpp"
 #include "toolset.h"
@@ -32,7 +36,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 {
     switch(LOWORD(wParam))
     {
-    // RIGHT_MENU
+    // 右键菜单
     case IDW_PROPERTY:
     case IDM_PROPERTY:
     {
@@ -49,6 +53,14 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         SetForegroundWindow(GetItemHandle(hTreeView));
         break;
     case IDM_MOVETOCENTER: // GRAYED
+        HWND tHwnd;
+        if(IsWindow(tHwnd = GetItemHandle(hTreeView))) {
+            RECT tWndRect, monRect;
+            GetWindowRect(tHwnd, &tWndRect);
+            GetClientRect(NULL, &monRect);
+            int height = tWndRect.bottom - tWndRect.top, width = tWndRect.right - tWndRect.left;
+            MoveWindow(tHwnd, (monRect.bottom - height) / 2, (monRect.right - width) / 2, width, height, false);
+        } else MessageBox(hwnd, "No Window selected", "WARNING", MB_ICONHAND);
         break;
     case IDM_SHOW_OTHER_WINDOWS:
         break;
@@ -70,10 +82,34 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         break;
     }
 
-    // WINDOW MENU
+    // 菜单栏
     case IDW_EXITPROGRAM:
         DestroyWindow(hwnd);
         break;
+
+    case IDW_EXPAND_ALL:
+    case IDW_COLLAPSE_ALL:
+    {
+        std::function<void(HTREEITEM, UINT)> wtP_ = 
+            [&](HTREEITEM hItem, UINT flag) {
+                HTREEITEM hChild = TreeView_GetChild(hTreeView, hItem);
+                while (hChild != NULL)
+                {
+                    wtP_(hChild, flag);
+                    hChild = TreeView_GetNextSibling(hTreeView, hChild);
+                }
+                TreeView_Expand(hTreeView, hItem, flag);
+            };
+        // HTREEITEM hFocusedItem = TreeView_GetNextItem(hTreeView, NULL, TVGN_CARET);
+        HTREEITEM hRoot = TreeView_GetRoot(hTreeView);
+        if(hRoot != NULL) {
+            wtP_(hRoot, (LOWORD(wParam)==IDW_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
+        } else {
+            MessageBox(hwnd, "ERROR: hRoot is NULL", "ERROR", MB_ICONHAND|MB_OK);
+        }
+        break;
+    }
+
     case IDW_BLACKLIST_ENABLED:
         Config.EnableBlockList = ! Config.EnableBlockList;
         CheckMenuItem(hWindowMenu, IDW_BLACKLIST_ENABLED, Config.EnableBlockList?(MF_CHECKED):(MF_UNCHECKED));
@@ -81,6 +117,9 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     
     case IDW_FINDWINDOW:
         StartFindWindow();
+        break;
+    case IDW_SEARCHWINDOW:
+        StartSearchWindow();
         break;
     case IDW_ABOUT:
         // 显示关于页面（未制作）
@@ -133,7 +172,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         break;
     case IDW_AUINTERVALCUSTOM: {
         // 这里本来应该弹窗问用户自定义延时的大小，但是我没有找到简单的解决方案
-        MessageBox(hwnd, "请手动更改配置文件:\nconfig.json:\n PropertyWindow : AutoUpdateInterval", "信息", MB_ICONINFORMATION|MB_OK);
+        MessageBox(hwnd, "请手动更改配置文件:\nconfig.json:\n    PropertyWindow : AutoUpdateInterval", "信息", MB_ICONINFORMATION|MB_OK);
 
         // Config.PropertyWindow.AutoUpdateInterval = Get();
 

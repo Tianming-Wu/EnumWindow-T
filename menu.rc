@@ -26,12 +26,18 @@ IDM_MAINMENU MENU
 
 IDW_MENU MENU
 {
+    POPUP "文件(&F)"
+    {
+        MENUITEM SEPARATOR
+        MENUITEM "重新启动应用(&Q)", IDW_RESTART, GRAYED
+        MENUITEM "退出(&X)", IDW_EXITPROGRAM
+    }
     POPUP "列表(&L)"
     {
         MENUITEM "刷新列表(F5)", IDW_REFRESHLIST
         MENUITEM SEPARATOR
-        MENUITEM "重新启动应用(&Q)", IDW_RESTART, GRAYED
-        MENUITEM "退出(&X)", IDW_EXITPROGRAM
+        MENUITEM "全部展开(&E)", IDW_EXPAND_ALL
+        MENUITEM "全部折叠(&C)", IDW_COLLAPSE_ALL
     }
     MENUITEM "查找窗口(&F)", IDW_FINDWINDOW
     MENUITEM "搜索窗口(&S)", IDW_SEARCHWINDOW

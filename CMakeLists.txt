@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 project(
     WindowControlEx
@@ -22,6 +22,13 @@ set(PROJECT_SOURCES
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(MSVC)
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:GBK>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:GBK>")
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/execution-charset:GBK>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/execution-charset:GBK>")
+endif()
 
 option(JSONCPP_WITH_TESTS "Build jsoncpp tests" OFF)
 

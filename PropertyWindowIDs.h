@@ -29,6 +29,7 @@
 #define PWH_CB_SIZEBOX                  5014
 #define PWH_CB_TOPMOST                  5015
 
+#define PWH_CB_EDITSWITCH               5100
 
 // Error Codes
 #define APPLYERR_RESIZEFAILED           0x01 // 00000001

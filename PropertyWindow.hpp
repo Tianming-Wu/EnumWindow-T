@@ -23,6 +23,7 @@ extern HFONT hPublicFont;
 
 #define WM_DATAPACKC WM_USER+12
 #define WM_UPDATEPROPERTY WM_USER+13
+#define WM_UPDATEEDITSTATE WM_USER+14
 #define PW_TIMER_ID 2
 
 struct MsgDataPackC {
@@ -57,8 +58,8 @@ void InitPropertyWindow() {
 LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     thread_local static WindowInfo targetWindow;
-    thread_local static BOOL modifying = false; // 指示文本框内容被修改，停止自动更新
-    thread_local static BOOL flag_AgainstChange = false; // 阻止文本框内容变化被视为修改信息
+    thread_local static BOOL editFlag = false; // 修改需要打开开关
+    thread_local static BOOL flag_AgainstChange = true; // 修改检查屏蔽
     thread_local static UINT_PTR timer_id = 0;
     // Local controls
     enum {
@@ -68,6 +69,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         pw_viewPsPathButton,
         pw_wndRestoreButton, pw_wndApplyButton, pw_wndExitButton,
         pw_hStatusBar,
+        pw_cbWndEdit,
         PWH_HwndID_MAXCOUNT
     };
     thread_local static HWND ctrls[PWH_HwndID_MAXCOUNT];
@@ -128,6 +130,9 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         ctrls[pw_wndExitButton] = CreateWindowEx(0, TEXT("Button"), TEXT("取消"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | BS_FLAT,
             490, 305, 90, 25, hwnd, (HMENU)PWH_BTN_CLOSE, hInstance, NULL);
 
+        ctrls[pw_cbWndEdit] = CreateWindowEx(0, TEXT("Button"), TEXT("启用编辑"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | BS_AUTOCHECKBOX,
+            55, 305, 90, 25, hwnd, (HMENU)PWH_CB_EDITSWITCH, hInstance, NULL);
+
         ctrls[pw_hStatusBar] = CreateWindowEx(0, STATUSCLASSNAME, NULL, WS_CHILD|WS_VISIBLE,
             0, 0, 0, 0,hwnd, (HMENU)PWH_IDS_STATUSBAR, hInstance, NULL);
         
@@ -144,6 +149,10 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         //SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 2, (LPARAM)(std::to_string(timer_id)).c_str());
 
+        editFlag = false;
+        SendMessage(hwnd, WM_UPDATEEDITSTATE, 0, 0);
+        SendMessageA(ctrls[pw_cbWndEdit], BM_SETCHECK, BST_UNCHECKED, 0);
+
         flag_AgainstChange = true; // 启用阻止文本框状态更新
         break;
     }
@@ -152,11 +161,12 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
     case WM_UPDATEPROPERTY:
     {
         flag_AgainstChange = true;
+        if(editFlag) break;
         std::stringstream sstr; std::string tstr;
 
         char windowTitle[256];
         GetWindowText(targetWindow.hwnd, windowTitle, sizeof(windowTitle));
-        if(std::string(windowTitle) != targetWindow.Title) // Window Title has been changed. 
+        if(std::string(windowTitle) != targetWindow.Title) // Window Title has been changed.
         {
             targetWindow.Title = windowTitle;
             SetWindowText(ctrls[pw_titleEditHwnd], targetWindow.Title.c_str());
@@ -207,7 +217,27 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         if(cbTopMost) SendMessage(ctrls[pw_cbTopMost], BM_SETCHECK, BST_CHECKED, 0);
 
         flag_AgainstChange = false;
-    } break;
+        break;
+    }
+    case WM_UPDATEEDITSTATE: // 编辑状态修改信息
+    {
+        // Title
+        SendMessage(ctrls[pw_titleEditHwnd], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        //Position
+        SendMessage(ctrls[pw_posEditXHwnd], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_posEditYHwnd], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_posEditWHwnd], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_posEditHHwnd], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        // Properties
+        SendMessage(ctrls[pw_cbVisible], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_cbSysMenu], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_cbMinimizeBox], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_cbMaximizeBox], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_cbSizeBox], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+        SendMessage(ctrls[pw_cbTopMost], EM_SETREADONLY, (LPARAM)!editFlag, 0);
+
+        break;
+    }
     case WM_DATAPACKC: // 接受线程发送的数据包
     {
         flag_AgainstChange = true;
@@ -240,10 +270,10 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         SetWindowText(ctrls[pw_posEditWHwnd], std::to_string(pts[2]).c_str());
         SetWindowText(ctrls[pw_posEditHHwnd], std::to_string(pts[3]).c_str());
 
-        GetWindowThreadProcessId(targetWindow.hwnd, &targetWindow.pid); //Get Window Process information.
+        GetWindowThreadProcessId(targetWindow.hwnd, &targetWindow.pid); // Get Window Process information.
         SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 0, (LPARAM)std::to_string(targetWindow.pid).c_str());
         std::string psPath, psImage;
-        psPath.reserve(Config.MaxPathLength); psImage.reserve(Config.MaxPathLength);
+        psPath.resize(Config.MaxPathLength); psImage.resize(Config.MaxPathLength);
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, targetWindow.pid);
         auto len = GetModuleFileNameEx(hProcess, NULL, (LPSTR)psPath.data(), (DWORD)Config.MaxPathLength);
         GetProcessImageFileName(hProcess, (LPSTR)psImage.data(), (DWORD)Config.MaxPathLength);
@@ -251,8 +281,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         SetWindowText(ctrls[pw_psPathEditHwnd], psPath.c_str());
         SetWindowText(ctrls[pw_psImageEditHwnd], psImage.c_str());
         
-
-        LONG windowLong = GetWindowLong(targetWindow.hwnd, GWL_STYLE); //Get Window information.
+        LONG windowLong = GetWindowLong(targetWindow.hwnd, GWL_STYLE); // Get Window information.
         LONG windowExLong = GetWindowLong(targetWindow.hwnd, GWL_EXSTYLE);
 
         targetWindow.old.cbSysMenu = (windowLong & WS_SYSMENU) != 0;
@@ -269,7 +298,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
     case WM_PW_CONFIGUPD: // 配置更新
     {
-        if(!modifying) {
+        if(!editFlag) {
             if(timer_id!=0) KillTimer(hwnd, timer_id);
             if(Config.PropertyWindow.AutoUpdateEnabled) {
                 timer_id = SetTimer(hwnd, PW_TIMER_ID, Config.PropertyWindow.AutoUpdateInterval, NULL);
@@ -314,7 +343,11 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
                 if(targetWindow.old.cbTopMost != cbTopMostBak) SetWindowPos(targetWindow.hwnd, (targetWindow.old.cbTopMost)?(HWND_TOPMOST):(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-                modifying = false;
+                // 取消修改开关
+                editFlag = false;
+                SendMessage(hwnd, WM_UPDATEEDITSTATE, 0, 0);
+                SendMessageA(ctrls[pw_cbWndEdit], BM_SETCHECK, BST_UNCHECKED, 0);
+
                 if(Config.PropertyWindow.AutoUpdateEnabled) {
                     timer_id = SetTimer(hwnd, PW_TIMER_ID, Config.PropertyWindow.AutoUpdateInterval, NULL);
                     SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 2, (LPARAM)(std::to_string(Config.PropertyWindow.AutoUpdateInterval)+"ms").c_str());
@@ -376,19 +409,58 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                 // 额外处理置顶状态更改
                 if(cbTopMost != cbTopMostBak) SetWindowPos(targetWindow.hwnd, (cbTopMost)?(HWND_TOPMOST):(HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-                modifying = false;
+                // 取消修改开关
+                editFlag = false;
+                SendMessage(hwnd, WM_UPDATEEDITSTATE, 0, 0);
+                SendMessageA(ctrls[pw_cbWndEdit], BM_SETCHECK, BST_UNCHECKED, 0);
+
+                // 启动自动刷新
                 if(Config.PropertyWindow.AutoUpdateEnabled) {
                     timer_id = SetTimer(hwnd, PW_TIMER_ID, Config.PropertyWindow.AutoUpdateInterval, NULL);
                     SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 2, (LPARAM)(std::to_string(Config.PropertyWindow.AutoUpdateInterval)+"ms").c_str());
                 }
                 break;
             }
-            case PWH_BTN_CLOSE:
+            case PWH_CB_EDITSWITCH: // 编辑开关切换
+            {
+                editFlag = (SendMessage(ctrls[pw_cbWndEdit], BM_GETCHECK, 0, 0) == BST_CHECKED);
+                SendMessage(hwnd, WM_UPDATEEDITSTATE, 0, 0);
+                break;
+            }
+            case PWH_BTN_CLOSE: // 关闭窗口
             {
                 DestroyWindow(hwnd);
                 break;
             }
-            case PWH_CB_VISIBLE: // 复选框修改
+            case PWH_IDS_BTN_VIEWPSPATH: // 点击“打开路径”按钮
+            {
+                STARTUPINFOA si = { 0 };
+                si.cb = sizeof(si);
+
+                int pathSize = GetWindowTextLength(ctrls[pw_psPathEditHwnd]);
+                std::string path; path.resize(pathSize+1);
+                GetWindowText(ctrls[pw_psPathEditHwnd], (LPSTR)path.data(), pathSize+1);
+                SetWindowText(targetWindow.hwnd, (LPSTR)path.data());
+
+                // std::string cmdline = "explorer /select,\"" + path + "\"";
+                HINSTANCE result = ShellExecuteA(
+                    NULL,
+                    "open",
+                    "explorer.exe",
+                    ("/select,\"" + path + "\"").c_str(),
+                    NULL,
+                    SW_SHOWNORMAL
+                );
+
+                // MessageBox(hwnd, (LPSTR)cmdline.c_str(), "DEBUG", MB_OK);
+
+                if(!result) {
+                    std::string errmsg = "Failed to start explorer.";
+                    MessageBox(hwnd, (LPSTR)errmsg.c_str(), "ERROR", MB_ICONHAND|MB_OK);
+                }
+                break;
+            }
+            case PWH_CB_VISIBLE: // 属性复选框修改
             case PWH_CB_SYSMENU:
             case PWH_CB_MINBOX:
             case PWH_CB_MAXBOX:
@@ -397,8 +469,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             {
                 if(!flag_AgainstChange) // 是用户进行的修改
                 {
-                    modifying = true;
-                    if(Config.PropertyWindow.AutoUpdateEnabled) {
+                    if(Config.PropertyWindow.AutoUpdateEnabled) { // 停止自动更新计时器
                         KillTimer(hwnd, timer_id);
                         SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 2, (LPARAM)"暂停");
                     }
@@ -412,8 +483,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         {
             if(!flag_AgainstChange) // 是用户进行的修改
             {
-                modifying = true;
-                if(Config.PropertyWindow.AutoUpdateEnabled) {
+                if(Config.PropertyWindow.AutoUpdateEnabled) { // 停止自动更新计时器
                     KillTimer(hwnd, timer_id);
                     SendMessage(ctrls[pw_hStatusBar], SB_SETTEXT, 2, (LPARAM)"暂停");
                 }

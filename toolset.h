@@ -26,7 +26,8 @@ HWND GetItemHandle(HWND hTreeView);
 bool SetMenuText(HMENU hMenu, int uid, std::string Text);
 void SetMenuSelection(HMENU hMenu, int range_l, int range_r, int active);
 
-template<typename _T>
+
+template<typename _T> [[deprecated]]
     std::string _tConv(_T _data) {
         std::stringstream sstr;
         sstr << _data;
@@ -34,7 +35,7 @@ template<typename _T>
     }
 
 enum SubType {
-    ST_Property, ST_FindWindow, ST_OutlineWindow
+    ST_Property, ST_FindWindow, ST_SearchWindow, ST_OutlineWindow
 };
 
 struct subThreadItem {
