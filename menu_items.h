@@ -13,9 +13,9 @@
 #define IDM_EXPAND_ALL                      1022
 #define IDM_COLLAPSE_ALL                    1023
 
-#define IDM_IGNORE_CLASS_THIS               1031
+#define IDM_IGNORE_CLASS_SINGLETIME         1031
 #define IDM_IGNORE_CLASS_PERMANENT          1032
-#define IDM_IGNORE_TITLE_THIS               1033
+#define IDM_IGNORE_TITLE_SINGLETIME         1033
 #define IDM_IGNORE_TITLE_PERMANENT          1034
 
 //WINDOW MENU

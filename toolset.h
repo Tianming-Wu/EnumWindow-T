@@ -26,6 +26,7 @@ HWND GetItemHandle(HWND hTreeView);
 bool SetMenuText(HMENU hMenu, int uid, std::string Text);
 void SetMenuSelection(HMENU hMenu, int range_l, int range_r, int active);
 
+std::string GetWindowClass(HWND hwnd);
 std::string _GetWindowText(HWND hwnd);
 
 template<typename _T> [[deprecated]]

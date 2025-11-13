@@ -76,6 +76,14 @@ void SetMenuSelection(HMENU hMenu, int range_l, int range_r, int active) {
     }
 }
 
+std::string GetWindowClass(HWND hwnd)
+{
+    char className[256];
+    GetClassName(hwnd, className, sizeof(className));
+
+    return std::string(className);
+}
+
 std::string _GetWindowText(HWND hwnd)
 {
     // int size = GetWindowTextLength(hwnd);

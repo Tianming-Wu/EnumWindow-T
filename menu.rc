@@ -16,9 +16,9 @@ IDM_MAINMENU MENU
         MENUITEM SEPARATOR
         POPUP "忽略(&I)"
         {
-            MENUITEM "本次忽略窗口类(&I)", IDM_IGNORE_CLASS_THIS
+            MENUITEM "本次忽略窗口类(&I)", IDM_IGNORE_CLASS_SINGLETIME
             MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_CLASS_PERMANENT
-            MENUITEM "本次忽略标题(&I)", IDM_IGNORE_TITLE_THIS
+            MENUITEM "本次忽略标题(&I)", IDM_IGNORE_TITLE_SINGLETIME
             MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_TITLE_PERMANENT
         }
     }

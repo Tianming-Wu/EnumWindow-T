@@ -57,8 +57,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpWCmdLin
 
     SendMessage(main_hwnd, WM_SETFONT, WPARAM(hPublicFont), TRUE);
     
-    BlockList.load(); // 加载黑名单
     Config.load(); // 加载配置
+    BlockList.load(); // 加载黑名单
 
     //g_quitevent = CreateEventA(NULL, FALSE, FALSE, NULL); // 配置全局线程退出信号
 

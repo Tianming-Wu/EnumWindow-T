@@ -109,6 +109,7 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         ctrls[pw_viewPsPathButton] = CreateWindowEx(0, TEXT("Button"), TEXT("..."), WS_CHILD|WS_VISIBLE|WS_TABSTOP | BS_FLAT,
             520, 224, 26, 26, hwnd, (HMENU)PWH_IDS_BTN_VIEWPSPATH, hInstance, NULL);
+        
 
         ctrls[pw_cbVisible] = CreateWindowEx(0, TEXT("Button"), TEXT("VISIBLE"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | BS_AUTOCHECKBOX,
             320, 30, 80, 20, hwnd, (HMENU)PWH_CB_VISIBLE, hInstance, NULL);

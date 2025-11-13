@@ -38,8 +38,8 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 {
     switch(LOWORD(wParam))
     {
-    // 右键菜单
-    case IDW_PROPERTY:
+    // ------ 右键菜单 ------
+    case IDW_PROPERTY: // 这一条是菜单栏的，逻辑完全一致所以复用
     case IDM_PROPERTY:
     {
         HWND hwndHandle;
@@ -83,8 +83,17 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         wtP_(hFocusedItem, (LOWORD(wParam)==IDM_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
         break;
     }
+    case IDM_IGNORE_CLASS_SINGLETIME:
+        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break;
+    case IDM_IGNORE_CLASS_PERMANENT:
+        BlockList.addClassPermenant(GetWindowClass(GetItemHandle(hTreeView))); break;
+    case IDM_IGNORE_TITLE_SINGLETIME:
+        BlockList.addTitle(_GetWindowText(GetItemHandle(hTreeView))); break;
+    case IDM_IGNORE_TITLE_PERMANENT:
+        BlockList.addTitlePermenant(_GetWindowText(GetItemHandle(hTreeView))); break;
+    
 
-    // 菜单栏
+    // ------ 菜单栏 ------
     case IDW_EXITPROGRAM:
         DestroyWindow(hwnd);
         break;
