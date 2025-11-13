@@ -1,12 +1,14 @@
 #include "blocklist_fx.h"
+#include <filesystem>
 
 _BlockList BlockList;
 
 _BlockList::_BlockList() {}
 
 void _BlockList::load() {
+    if(!std::filesystem::exists(filename)) write_default();
     std::ifstream file(filename);
-    if(file.bad()) save();
+    if(file.bad()) write_default();
     file.open(filename);
     file >> root;
     file.close();
@@ -67,12 +69,16 @@ void _BlockList::parseBlockList() {
 }
 
 void _BlockList::updateBlockList() {
-        root["blocklist"]["WindowClass"].clear();
-        root["blocklist"]["WindowTitle"].clear();
-        for (const std::string& item : BLWindowClass) {
-            root["blocklist"]["WindowClass"].append(item);
-        }
-        for (const std::string& item : BLWindowTitle) {
-            root["blocklist"]["WindowTitle"].append(item);
-        }
+    root["blocklist"]["WindowClass"].clear();
+    root["blocklist"]["WindowTitle"].clear();
+    for (const std::string& item : BLWindowClass) {
+        root["blocklist"]["WindowClass"].append(item);
     }
+    for (const std::string& item : BLWindowTitle) {
+        root["blocklist"]["WindowTitle"].append(item);
+    }
+}
+
+void _BlockList::write_default() {
+    save();
+}

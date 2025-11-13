@@ -1,4 +1,5 @@
 #include "config.h"
+#include <filesystem>
 
 _Config Config;
 
@@ -7,6 +8,7 @@ void _Config::setFileName(std::string& _filename) {
 }
 
 void _Config::load() {
+    if(!std::filesystem::exists(filename)) write_default();
     std::ifstream file(filename);
     if(file.bad()) write_default();
     file.open(filename);
@@ -53,10 +55,12 @@ void _Config::compile() {
     root["SearchWindow"]["AutoUpdateOnEdit"] = SearchWindow.AutoUpdateOnEdit;
 }
 
+#include <windows.h>
+
 void _Config::write_default()
 {
-    ///TODO: write default configuration file.
-
+    // Default configs are already written as default
+    // values, so compile directly.
     compile();
     save();
 }

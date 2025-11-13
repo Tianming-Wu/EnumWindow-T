@@ -21,7 +21,7 @@ set(PROJECT_SOURCES
     menu.rc menu_items.h
 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
