@@ -27,10 +27,15 @@ public:
     // --Values
     bool EnableBlockList = true;
     size_t MaxPathLength = 260;
+
     struct {
         bool AutoUpdateEnabled = true;
         int AutoUpdateInterval = 1000;
     } PropertyWindow;
+
+    struct {
+        bool AutoUpdateOnEdit = true;
+    } SearchWindow;
 };
 
 extern _Config Config;

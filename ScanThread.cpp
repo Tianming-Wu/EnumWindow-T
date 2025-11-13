@@ -7,7 +7,6 @@
 #include "blocklist_fx.h"
 #include "config.h"
 
-
 extern bool Scanning;
 extern std::thread *scanthrd;
 extern int windowcount, filteredwindowcount;

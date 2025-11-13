@@ -76,6 +76,20 @@ void SetMenuSelection(HMENU hMenu, int range_l, int range_r, int active) {
     }
 }
 
+std::string _GetWindowText(HWND hwnd)
+{
+    // int size = GetWindowTextLength(hwnd);
+    // std::string result; result.resize(size+1);
+    // GetWindowText(hwnd, (LPSTR)result.data(), size+1);
+
+    int size = GetWindowTextLength(hwnd);
+    char *buf = new char[size + 1];
+    GetWindowText(hwnd, buf, size + 1);
+    std::string result(buf);
+    delete[] buf;
+    return result;
+}
+
 std::vector<subThreadItem> subThreads;
 std::vector<subWindowItem> subWindows;
 

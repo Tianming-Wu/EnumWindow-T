@@ -36,17 +36,27 @@ void _Config::parse() {
         PropertyWindow.AutoUpdateInterval = root["PropertyWindow"]["AutoUpdateInterval"].asInt();
     }
 
+    if(root.isMember("SearchWindow")) {
+        SearchWindow.AutoUpdateOnEdit = root["SearchWindow"]["AutoUpdateOnEdit"].asBool();
+    }
+
 }
 
 void _Config::compile() {
     root.clear();
     root["EnableBlockList"] = EnableBlockList;
     root["MaxPathLength"] = MaxPathLength;
+
     root["PropertyWindow"]["AutoUpdateEnabled"] = PropertyWindow.AutoUpdateEnabled;
     root["PropertyWindow"]["AutoUpdateInterval"] = PropertyWindow.AutoUpdateInterval;
+
+    root["SearchWindow"]["AutoUpdateOnEdit"] = SearchWindow.AutoUpdateOnEdit;
 }
 
 void _Config::write_default()
 {
     ///TODO: write default configuration file.
+
+    compile();
+    save();
 }
