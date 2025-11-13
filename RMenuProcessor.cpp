@@ -84,7 +84,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         break;
     }
     case IDM_IGNORE_CLASS_SINGLETIME:
-        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break;
+        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break; // BeginScan(); ?
     case IDM_IGNORE_CLASS_PERMANENT:
         BlockList.addClassPermenant(GetWindowClass(GetItemHandle(hTreeView))); break;
     case IDM_IGNORE_TITLE_SINGLETIME:
