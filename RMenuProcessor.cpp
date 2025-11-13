@@ -11,6 +11,8 @@
 #include "config.h"
 #include "blocklist_fx.h"
 
+#include "about.hpp"
+
 #include "PropertyWindow.hpp"
 #include "FindWindow.hpp"
 #include "SearchWindow.hpp"
@@ -133,10 +135,10 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         StartSearchWindow();
         break;
     case IDW_ABOUT:
-        // 显示关于页面（未制作）
+        about::showAbout();
         break;
     case IDW_HELP:
-        // 显示帮助页面（未制作）
+        about::showHelp();
         break;
     case IDW_REFRESHLIST:
         BeginScan();

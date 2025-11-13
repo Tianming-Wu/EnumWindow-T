@@ -62,7 +62,7 @@ IDW_MENU MENU
             MENUITEM "...", IDW_AUINTERVALCUSTOM
         }
     }
-    POPUP "关于(&A)", GRAYED
+    POPUP "关于(&A)"
     {
         MENUITEM "关于(&A)", IDW_ABOUT
         MENUITEM "帮助(&H)", IDW_HELP

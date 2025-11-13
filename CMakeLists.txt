@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
     RMenuProcessor.hpp RMenuProcessor.cpp
     WindowOperations.hpp
     menu.rc menu_items.h
+    about.hpp about.cpp
 )
 
 set(CMAKE_CXX_STANDARD 17)
