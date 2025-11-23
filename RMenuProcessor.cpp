@@ -61,9 +61,11 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         if(IsWindow(tHwnd = GetItemHandle(hTreeView))) {
             RECT tWndRect, monRect;
             GetWindowRect(tHwnd, &tWndRect);
-            GetClientRect(NULL, &monRect);
-            int height = tWndRect.bottom - tWndRect.top, width = tWndRect.right - tWndRect.left;
-            MoveWindow(tHwnd, (monRect.bottom - height) / 2, (monRect.right - width) / 2, width, height, false);
+            SystemParametersInfo(SPI_GETWORKAREA, 0, &monRect, 0);
+            int wWidth = tWndRect.right - tWndRect.left, wHeight = tWndRect.bottom - tWndRect.top;
+            int screenWidth = monRect.right - monRect.left, screenHeight = monRect.bottom - monRect.top;
+            int x = monRect.left + (screenWidth - wWidth) / 2, y = monRect.top + (screenHeight - wHeight) / 2;
+            MoveWindow(tHwnd, x, y, wWidth, wHeight, false);
         } else MessageBox(hwnd, "No Window selected", "WARNING", MB_ICONHAND);
         break;
     case IDM_SHOW_OTHER_WINDOWS:
