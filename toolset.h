@@ -23,6 +23,12 @@ void MakeSizeGrip(int* _array, int Size);
 
 HWND GetItemHandle(HWND hTreeView);
 
+// 在 TreeView 中根据存储在 lParam 的 HWND 查找对应的 HTREEITEM
+HTREEITEM FindTreeViewItemByHwnd(HWND hTreeView, HWND hwndTarget);
+
+// 尝试让某个子控件获得真正的键盘焦点，必要时短暂关联输入线程
+bool FocusControlAcrossThreads(HWND controlHwnd);
+
 bool SetMenuText(HMENU hMenu, int uid, std::string Text);
 void SetMenuSelection(HMENU hMenu, int range_l, int range_r, int active);
 

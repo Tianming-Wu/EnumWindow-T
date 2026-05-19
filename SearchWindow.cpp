@@ -74,8 +74,11 @@ LRESULT CALLBACK SearchWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         case BN_CLICKED: { // °´ÏÂ°´Å¥
             switch(LOWORD(wParam)) {
             case SWH_ID_TREEBTN: {
-                HTREEITEM item = TreeView_MapAccIDToHTREEITEM(hTreeView, (WPARAM)targetHwnd);
-                if(item) TreeView_SelectItem(hTreeView, item);
+                HTREEITEM item = FindTreeViewItemByHwnd(hTreeView, targetHwnd);
+                if(item) {
+                    FocusControlAcrossThreads(hTreeView);
+                    TreeView_SelectItem(hTreeView, item);
+                }
                     else MessageBox(NULL, "Failed", "ERROR", 0);
                 break;
             }

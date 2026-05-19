@@ -1,24 +1,30 @@
 #pragma once
 
-//RIGHT MENU
+// RIGHT MENU (On TreeView items)
 #define IDM_MAINMENU                        1001
 
 #define IDM_PROPERTY                        1003
 
-#define IDM_SHOWPOSITION                    1008
-#define IDM_SWITCHTO                        1009
-#define IDM_MOVETOCENTER                    1010
+#define IDM_SHOWPOSITION                    1004
+#define IDM_SWITCHTO                        1005
+#define IDM_MOVETOCENTER                    1006
 
 #define IDM_SHOW_OTHER_WINDOWS              1021
 #define IDM_EXPAND_ALL                      1022
 #define IDM_COLLAPSE_ALL                    1023
 
+#define IDM_MINIMIZE                        1007
+#define IDM_MAXIMIZE                        1008
+#define IDM_RESTORE                         1009
+#define IDM_CLOSE                           1010
+
+// -- BLOCKLIST (COLLAPSED) --
 #define IDM_IGNORE_CLASS_SINGLETIME         1031
 #define IDM_IGNORE_CLASS_PERMANENT          1032
 #define IDM_IGNORE_TITLE_SINGLETIME         1033
 #define IDM_IGNORE_TITLE_PERMANENT          1034
 
-//WINDOW MENU
+// WINDOW MENU
 #define IDW_MENU                            2001
 
 #define IDW_RESTART                         2002

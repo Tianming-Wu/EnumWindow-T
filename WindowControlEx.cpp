@@ -19,6 +19,37 @@ std::thread *scanthrd;
 int windowcount, filteredwindowcount;
 HTREEITEM tree_conduct;
 
+static HTREEITEM SelectTreeItemUnderCursor(HWND treeView, LPARAM lParam)
+{
+    if(!IsWindow(treeView)) return NULL;
+
+    if(lParam != -1) {
+        TVHITTESTINFO hitInfo { 0 };
+        hitInfo.pt.x = (SHORT)LOWORD(lParam);
+        hitInfo.pt.y = (SHORT)HIWORD(lParam);
+        ScreenToClient(treeView, &hitInfo.pt);
+
+        HTREEITEM hitItem = TreeView_HitTest(treeView, &hitInfo);
+        if(hitItem) {
+            TreeView_SelectItem(treeView, hitItem);
+            SetFocus(treeView);
+            TreeView_EnsureVisible(treeView, hitItem);
+            return hitItem;
+        }
+    }
+
+    HTREEITEM selected = TreeView_GetSelection(treeView);
+    if(selected) return selected;
+
+    HTREEITEM root = TreeView_GetRoot(treeView);
+    if(root) {
+        TreeView_SelectItem(treeView, root);
+        SetFocus(treeView);
+        TreeView_EnsureVisible(treeView, root);
+    }
+    return root;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpWCmdLine, INT nCmdShow)
 {
     g_hInstance = hInstance;
@@ -124,6 +155,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_ADDROOT: {
         MsgDataPackA* data = reinterpret_cast<MsgDataPackA*>(lParam);
         tree_conduct = AddRootItem(hTreeView, data->Name.c_str(), (LPARAM)data->handle);
+        if(TreeView_GetSelection(hTreeView) == NULL && tree_conduct != NULL) {
+            TreeView_SelectItem(hTreeView, tree_conduct);
+            TreeView_EnsureVisible(hTreeView, tree_conduct);
+        }
         SetEvent(reinterpret_cast<HANDLE>(data->event));
         break;
     }
@@ -139,6 +174,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
     }
     case WM_CONTEXTMENU: {  
+        if((HWND)wParam == hTreeView) {
+            SelectTreeItemUnderCursor(hTreeView, lParam);
+        }
+
         POINT pt = { LOWORD(lParam), HIWORD(lParam) };
         TrackPopupMenu(hPopupMenu, TPM_LEFTALIGN | TPM_TOPALIGN, pt.x, pt.y, 0, hwnd, NULL);
         break;

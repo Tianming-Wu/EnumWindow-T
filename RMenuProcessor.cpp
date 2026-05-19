@@ -47,16 +47,16 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         HWND hwndHandle;
         if((hwndHandle = GetItemHandle(hTreeView)) != nullptr)
             StartPropertyWindow(hwndHandle);
-        else MessageBox(hwnd, "Failed to fetch data.", "ERROR", MB_ICONERROR);
+        else MessageBox(hwnd, "无法从列表项提取窗口句柄", "错误", MB_ICONERROR);
         break;
     }
     case IDM_SHOWPOSITION:
-        //ShowWindowOutline(GetItemHandle(hTreeView)); //Not working
+        //ShowWindowOutline(GetItemHandle(hTreeView)); // 这个子模块不工作，稍后尝试修复
         break;
     case IDM_SWITCHTO:
         SetForegroundWindow(GetItemHandle(hTreeView));
         break;
-    case IDM_MOVETOCENTER: // GRAYED
+    case IDM_MOVETOCENTER:
         HWND tHwnd;
         if(IsWindow(tHwnd = GetItemHandle(hTreeView))) {
             RECT tWndRect, monRect;
@@ -66,7 +66,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             int screenWidth = monRect.right - monRect.left, screenHeight = monRect.bottom - monRect.top;
             int x = monRect.left + (screenWidth - wWidth) / 2, y = monRect.top + (screenHeight - wHeight) / 2;
             MoveWindow(tHwnd, x, y, wWidth, wHeight, false);
-        } else MessageBox(hwnd, "No Window selected", "WARNING", MB_ICONHAND);
+        } else MessageBox(hwnd, "未选择窗口", "警告", MB_ICONHAND);
         break;
     case IDM_SHOW_OTHER_WINDOWS:
         break;
@@ -87,8 +87,18 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         wtP_(hFocusedItem, (LOWORD(wParam)==IDM_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
         break;
     }
+
+    case IDM_MINIMIZE:
+        ShowWindow(GetItemHandle(hTreeView), SW_MINIMIZE); break;
+    case IDM_MAXIMIZE:
+        ShowWindow(GetItemHandle(hTreeView), SW_MAXIMIZE); break;
+    case IDM_RESTORE:
+        ShowWindow(GetItemHandle(hTreeView), SW_RESTORE); break;
+    case IDM_CLOSE:
+        CloseWindow(GetItemHandle(hTreeView)); break;
+
     case IDM_IGNORE_CLASS_SINGLETIME:
-        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break; // BeginScan(); ?
+        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break; // BeginScan(); ? 或者尝试增量移除此窗口。
     case IDM_IGNORE_CLASS_PERMANENT:
         BlockList.addClassPermenant(GetWindowClass(GetItemHandle(hTreeView))); break;
     case IDM_IGNORE_TITLE_SINGLETIME:
@@ -98,9 +108,8 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     
 
     // ------ 菜单栏 ------
-    case IDW_EXITPROGRAM:
-        DestroyWindow(hwnd);
-        break;
+    case IDW_EXITPROGRAM: // 退出程序
+        DestroyWindow(hwnd); break;
 
     case IDW_EXPAND_ALL:
     case IDW_COLLAPSE_ALL:
@@ -120,7 +129,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         if(hRoot != NULL) {
             wtP_(hRoot, (LOWORD(wParam)==IDW_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
         } else {
-            MessageBox(hwnd, "ERROR: hRoot is NULL", "ERROR", MB_ICONHAND|MB_OK);
+            MessageBox(hwnd, "错误: hRoot is NULL", "错误", MB_ICONHAND|MB_OK);
         }
         break;
     }

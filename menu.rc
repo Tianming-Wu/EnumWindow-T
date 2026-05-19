@@ -14,12 +14,17 @@ IDM_MAINMENU MENU
         MENUITEM "全部展开(&U)", IDM_EXPAND_ALL
         MENUITEM "全部折叠(&F)",  IDM_COLLAPSE_ALL
         MENUITEM SEPARATOR
+        MENUITEM "最小化(&M)", IDM_MINIMIZE
+        MENUITEM "最大化(&X)", IDM_MAXIMIZE
+        MENUITEM "还原(&R)", IDM_RESTORE
+        MENUITEM "关闭(&C)", IDM_CLOSE
+        MENUITEM SEPARATOR
         POPUP "忽略(&I)"
         {
             MENUITEM "本次忽略窗口类(&I)", IDM_IGNORE_CLASS_SINGLETIME
             MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_CLASS_PERMANENT
             MENUITEM "本次忽略标题(&I)", IDM_IGNORE_TITLE_SINGLETIME
-            MENUITEM "永久忽略窗口类(&R)", IDM_IGNORE_TITLE_PERMANENT
+            MENUITEM "永久忽略标题(&R)", IDM_IGNORE_TITLE_PERMANENT
         }
     }
 }

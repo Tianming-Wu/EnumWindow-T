@@ -21,6 +21,8 @@ extern HFONT hPublicFont;
 bool FindWindowRunning = false;
 HWND s_findWindowHWND = nullptr;
 
+extern HWND main_hwnd;
+
 void TrackMouseLeave(HWND hwnd)
 {
     TRACKMOUSEEVENT tme;
@@ -161,9 +163,11 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             {
             case FWH_ID_TREEBTN:
             {
-                HTREEITEM item = TreeView_MapAccIDToHTREEITEM(hTreeView, (WPARAM)g_hTargetWindow);
-                if(item) TreeView_SelectItem(hTreeView, item);
-                    else MessageBox(NULL, "Failed", "ERROR", 0);
+                HTREEITEM item = FindTreeViewItemByHwnd(hTreeView, g_hTargetWindow);
+                if(item) {
+                    FocusControlAcrossThreads(hTreeView);
+                    TreeView_SelectItem(hTreeView, item);
+                } else MessageBox(NULL, "无法找到对应列表项。\n尝试刷新列表？", "错误", 0);
                 break;
             }
             case FWH_ID_PROPERTYBTN:

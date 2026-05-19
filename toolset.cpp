@@ -1,4 +1,5 @@
 #include "toolset.h"
+#include <functional>
 
 
 BOOL TextOutStd(HDC _hdc, int x, int y, std::string _str)
@@ -117,4 +118,60 @@ void CloseAllSubWindows() {
     for(auto& item : subWindows) {
         if(IsWindow(item.hwnd)) DestroyWindow(item.hwnd);
     }
+}
+
+// 递归查找 TreeView 项，按 lParam 匹配 accID（通常保存 HWND）
+static HTREEITEM FindItemByParam(HWND hTreeView, HTREEITEM hItem, HWND hwndTarget)
+{
+    if(!hItem) return NULL;
+    TVITEM tvi { 0 };
+    tvi.mask = TVIF_PARAM;
+    tvi.hItem = hItem;
+    if(TreeView_GetItem(hTreeView, &tvi)) {
+        if((HWND)(tvi.lParam) == hwndTarget) return hItem;
+    }
+
+    HTREEITEM child = TreeView_GetChild(hTreeView, hItem);
+    for(HTREEITEM cur = child; cur; cur = TreeView_GetNextSibling(hTreeView, cur)) {
+        HTREEITEM found = FindItemByParam(hTreeView, cur, hwndTarget);
+        if(found) return found;
+    }
+    return NULL;
+}
+
+HTREEITEM FindTreeViewItemByHwnd(HWND hTreeView, HWND hwndTarget)
+{
+    if(!IsWindow(hTreeView)) return NULL;
+    HTREEITEM root = TreeView_GetRoot(hTreeView);
+    for(HTREEITEM cur = root; cur; cur = TreeView_GetNextSibling(hTreeView, cur)) {
+        HTREEITEM found = FindItemByParam(hTreeView, cur, hwndTarget);
+        if(found) return found;
+    }
+    return NULL;
+}
+
+bool FocusControlAcrossThreads(HWND controlHwnd)
+{
+    if(!IsWindow(controlHwnd)) return false;
+
+    HWND rootWindow = GetAncestor(controlHwnd, GA_ROOT);
+    if(!IsWindow(rootWindow)) rootWindow = controlHwnd;
+
+    DWORD targetThreadId = 0;
+    DWORD currentThreadId = GetCurrentThreadId();
+    targetThreadId = GetWindowThreadProcessId(rootWindow, nullptr);
+
+    bool attached = false;
+    if(targetThreadId && targetThreadId != currentThreadId) {
+        attached = AttachThreadInput(currentThreadId, targetThreadId, TRUE) != 0;
+    }
+
+    SetForegroundWindow(rootWindow);
+    SetActiveWindow(rootWindow);
+    SetFocus(controlHwnd);
+
+    if(attached) {
+        AttachThreadInput(currentThreadId, targetThreadId, FALSE);
+    }
+    return true;
 }
