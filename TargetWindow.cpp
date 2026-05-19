@@ -7,7 +7,7 @@
 #include <thread>
 #include <vector>
 
-#include "FindWindowIDs.h"
+#include "TargetWindowIDs.h"
 #include "toolset.h"
 
 #include "PropertyWindow.hpp"
@@ -18,8 +18,8 @@ extern HWND hTreeView;
 extern bool gb_quitEvent;
 extern HFONT hPublicFont;
 
-bool FindWindowRunning = false;
-HWND s_findWindowHWND = nullptr;
+bool TargetWindowRunning = false;
+HWND s_targetWindowHWND = nullptr;
 
 extern HWND main_hwnd;
 
@@ -34,51 +34,47 @@ void TrackMouseLeave(HWND hwnd)
     TrackMouseEvent(&tme);
 }
 
-LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK TargetWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     thread_local static HCURSOR hDragCursor, hNormalCursor;
     thread_local static BOOL g_bDrag = FALSE;
     thread_local static HWND g_hTargetWindow = nullptr, g_lTargWnd = nullptr;
     thread_local static POINT g_MousePos;
-    //thread_local static HBRUSH hTransparentBrush;
 
     thread_local bool first_active = true;
 
     thread_local static const RECT dragRect = makeRectRelative(15,10,32,32);
 
-    enum { // IDs as the auto index of the hwnd storage. awa
-        fw_hwndEditHwnd, fw_classEditHwnd, fw_titleEditHwnd, fw_sizeEditHwnd, fw_processEditHwnd,
-        fw_treeBtnHwnd, fw_propertyBtnHwnd,
-        FWH_HwndID_MAXCOUNT
+    enum {
+        tw_hwndEditHwnd, tw_classEditHwnd, tw_titleEditHwnd, tw_sizeEditHwnd, tw_processEditHwnd,
+        tw_treeBtnHwnd, tw_propertyBtnHwnd,
+        TWH_HwndID_MAXCOUNT
     };
 
-    thread_local static HWND ctrls[FWH_HwndID_MAXCOUNT];
+    thread_local static HWND ctrls[TWH_HwndID_MAXCOUNT];
 
-    //if(WaitForSingleObject(g_quitevent, 0) == WAIT_OBJECT_0) DestroyWindow(hwnd);
     if(gb_quitEvent) DestroyWindow(hwnd);
     switch(uMsg) {
     case WM_CREATE:
     {
         HINSTANCE hInstance = ((LPCREATESTRUCT)lParam)->hInstance;
 
-        ctrls[fw_hwndEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT,
+        ctrls[tw_hwndEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT,
             55, 55, 90, 24, hwnd, (HMENU)NULL, hInstance, NULL);
-        ctrls[fw_classEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
+        ctrls[tw_classEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
             55, 85, 255, 24, hwnd, (HMENU)NULL, hInstance, NULL);
-        ctrls[fw_titleEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
+        ctrls[tw_titleEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
             55, 115, 255, 24, hwnd, (HMENU)NULL, hInstance, NULL);
-        ctrls[fw_sizeEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
+        ctrls[tw_sizeEditHwnd] = CreateWindowEx(0, TEXT("Edit"), NULL, WS_CHILD|WS_VISIBLE|WS_BORDER|WS_TABSTOP | ES_READONLY|ES_LEFT|ES_AUTOHSCROLL,
             55, 145, 255, 24, hwnd, (HMENU)NULL, hInstance, NULL);
 
-        ctrls[fw_treeBtnHwnd] = CreateWindowEx(0, TEXT("Button"), TEXT("查看列表"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | WS_DISABLED | BS_FLAT,
-            185, 230, 90, 25, hwnd, (HMENU)FWH_ID_TREEBTN, hInstance, NULL);
-        ctrls[fw_propertyBtnHwnd] = CreateWindowEx(0, TEXT("Button"), TEXT("查看属性"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | WS_DISABLED | BS_FLAT,
-            285, 230, 90, 25, hwnd, (HMENU)FWH_ID_PROPERTYBTN, hInstance, NULL);
+        ctrls[tw_treeBtnHwnd] = CreateWindowEx(0, TEXT("Button"), TEXT("查看列表"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | WS_DISABLED | BS_FLAT,
+            185, 230, 90, 25, hwnd, (HMENU)TWH_ID_TREEBTN, hInstance, NULL);
+        ctrls[tw_propertyBtnHwnd] = CreateWindowEx(0, TEXT("Button"), TEXT("查看属性"), WS_CHILD|WS_VISIBLE|WS_TABSTOP | WS_DISABLED | BS_FLAT,
+            285, 230, 90, 25, hwnd, (HMENU)TWH_ID_PROPERTYBTN, hInstance, NULL);
 
         hDragCursor = LoadCursor(NULL, IDC_CROSS);
         hNormalCursor = LoadCursor(NULL, IDC_ARROW);
-
-        //hTransparentBrush = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 
         for(HWND &i: ctrls) SendMessage(i, WM_SETFONT, WPARAM(hPublicFont), TRUE);
 
@@ -93,12 +89,11 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         if (PtInRect(&dragRect, mousePos))
             g_bDrag = true;
 
-        //g_bDrag = DragDetect(hwnd, g_MousePos);
         if (g_bDrag)
             {
                 SetCursor(hDragCursor);
-                SetCapture(hwnd); // 捕获鼠标消息
-                TrackMouseLeave(hwnd); // 开始监测鼠标离开事件
+                SetCapture(hwnd);
+                TrackMouseLeave(hwnd);
                 g_hTargetWindow = NULL;
                 InvalidateRect(hwnd, NULL, TRUE);
             }
@@ -107,36 +102,33 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case WM_MOUSEMOVE:
         if (g_bDrag)
         {
-            // 获取鼠标当前位置
             GetCursorPos(&g_MousePos);
-
-            // 获取鼠标下方的窗口句柄
             g_hTargetWindow = WindowFromPoint(g_MousePos);
 
             if(g_hTargetWindow != g_lTargWnd) {
                 if(first_active) {
-                    EnableWindow(ctrls[fw_treeBtnHwnd], TRUE);
-                    EnableWindow(ctrls[fw_propertyBtnHwnd], TRUE);
+                    EnableWindow(ctrls[tw_treeBtnHwnd], TRUE);
+                    EnableWindow(ctrls[tw_propertyBtnHwnd], TRUE);
                     first_active = false;
                 }
 
                 std::stringstream sstr; std::string tstr;
                 sstr << std::hex << g_hTargetWindow; tstr = sstr.str(); sstr.str("");
-                SetWindowText(hwnd, (LPSTR)(std::string("查找窗口 - ")+tstr).c_str());
+                SetWindowText(hwnd, (LPSTR)(std::string("目标窗口 - ")+tstr).c_str());
                 tstr = tstr.substr(tstr.length()-6); sstr << "0x" << tstr;
-                SetWindowText(ctrls[fw_hwndEditHwnd], sstr.str().c_str());
+                SetWindowText(ctrls[tw_hwndEditHwnd], sstr.str().c_str());
                 sstr.str("");
 
                 char windowClass[256], windowTitle[256];
                 GetClassName(g_hTargetWindow, windowClass, sizeof(windowClass));
                 GetWindowText(g_hTargetWindow, windowTitle, sizeof(windowTitle));
-                SetWindowText(ctrls[fw_classEditHwnd], windowClass);
-                SetWindowText(ctrls[fw_titleEditHwnd], windowTitle);
+                SetWindowText(ctrls[tw_classEditHwnd], windowClass);
+                SetWindowText(ctrls[tw_titleEditHwnd], windowTitle);
 
                 RECT tR;  std::stringstream sstr1;
                 GetWindowRect(g_hTargetWindow, &tR);
                 sstr1 << "(" << tR.left << ", " << tR.top << "), " << tR.right-tR.left << "*" << tR.bottom-tR.top;
-                SetWindowText(ctrls[fw_sizeEditHwnd], sstr1.str().c_str());
+                SetWindowText(ctrls[tw_sizeEditHwnd], sstr1.str().c_str());
                 sstr1.str("");
 
                 g_lTargWnd = g_hTargetWindow;
@@ -147,7 +139,7 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         if (g_bDrag)
         {
             SetCursor(hNormalCursor);
-            ReleaseCapture(); // 释放鼠标捕获
+            ReleaseCapture();
             g_bDrag = FALSE;
             InvalidateRect(hwnd, NULL, TRUE);
         }
@@ -158,10 +150,10 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case WM_COMMAND:
     {
         switch(HIWORD(wParam)){
-        case BN_CLICKED: // 按下按钮
+        case BN_CLICKED:
             switch(LOWORD(wParam))
             {
-            case FWH_ID_TREEBTN:
+            case TWH_ID_TREEBTN:
             {
                 HTREEITEM item = FindTreeViewItemByHwnd(hTreeView, g_hTargetWindow);
                 if(item) {
@@ -170,7 +162,7 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 } else MessageBox(NULL, "无法找到对应列表项。\n尝试刷新列表？", "错误", 0);
                 break;
             }
-            case FWH_ID_PROPERTYBTN:
+            case TWH_ID_PROPERTYBTN:
             {
                 StartPropertyWindow(g_hTargetWindow);
                 break;
@@ -200,14 +192,9 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         DrawTextStd(hdc, "标题", &posRect(15, 117), DTS_DEFAULT);
         DrawTextStd(hdc, "尺寸", &posRect(15, 147), DTS_DEFAULT);
 
-        //HBRUSH hBrush = CreatePatternBrush(GetStockObject(HOLLOW_BRUSH));
-        //HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hTransparentBrush);
-        
         Rectangle(hdc, dragRect.left-1, dragRect.top-1, dragRect.right+1, dragRect.bottom+1);
-        if(!g_bDrag) DrawIconEx(hdc, dragRect.left, dragRect.top, hDragCursor, 0, 0, 0, (HBRUSH)GetStockObject(COLOR_BACKGROUND) /*hTransparentBrush*/, DI_NORMAL | DI_COMPAT | DI_DEFAULTSIZE);
+        if(!g_bDrag) DrawIconEx(hdc, dragRect.left, dragRect.top, hDragCursor, 0, 0, 0, (HBRUSH)GetStockObject(COLOR_BACKGROUND), DI_NORMAL | DI_COMPAT | DI_DEFAULTSIZE);
             else FillRect(hdc, &dragRect, (HBRUSH)GetStockObject(COLOR_BACKGROUND));
-
-        //SelectObject(hdc, hOldBrush);
 
         EndPaint(hwnd, &ps);
         break;
@@ -224,35 +211,35 @@ LRESULT CALLBACK FindWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     return 0;
 }
 
-int FindWindow_WorkerThread() {
-    HWND findWindow;
-    FindWindowRunning = true;
+int TargetWindow_WorkerThread() {
+    HWND targetWindow;
+    TargetWindowRunning = true;
     
     WNDCLASSEX wcex = { 0 };
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = 0;
     wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-    wcex.lpfnWndProc = FindWindowProc;
+    wcex.lpfnWndProc = TargetWindowProc;
     wcex.hInstance = g_hInstance;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wcex.lpszClassName = TEXT("WindowContolExClass_FindWindow{}");
+    wcex.lpszClassName = TEXT("WindowContolExClass_TargetWindow{}");
     wcex.hbrBackground = HBRUSH(COLOR_WINDOW);
 
     RegisterClassExA(&wcex);
 
-    findWindow = CreateWindowEx(
-        /*WS_EX_NOREDIRECTIONBITMAP,*/ 0,
-        TEXT("WindowContolExClass_FindWindow{}"), TEXT("查找窗口"),
+    targetWindow = CreateWindowEx(
+        0,
+        TEXT("WindowContolExClass_TargetWindow{}"), TEXT("目标窗口"),
         WS_OVERLAPPEDWINDOW &~ WS_SIZEBOX &~ WS_MAXIMIZEBOX,
         CW_USEDEFAULT, CW_USEDEFAULT, 400, 300,
         NULL, NULL, g_hInstance, NULL
     );
-    s_findWindowHWND = findWindow;
+    s_targetWindowHWND = targetWindow;
 
-    subWindows.push_back(findWindow);
+    subWindows.push_back(targetWindow);
 
-    ShowWindow(findWindow, SW_SHOW);
+    ShowWindow(targetWindow, SW_SHOW);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
@@ -261,18 +248,18 @@ int FindWindow_WorkerThread() {
         DispatchMessage(&msg);
     }
 
-    FindWindowRunning = false;
-    s_findWindowHWND = nullptr;
+    TargetWindowRunning = false;
+    s_targetWindowHWND = nullptr;
 
     return (int)msg.wParam;
 }
 
 
-int StartFindWindow() {
-    if(!FindWindowRunning) {
-        std::thread* thrd = new std::thread(FindWindow_WorkerThread);
-        subThreadItem item { thrd, ST_FindWindow, nullptr };
+int StartTargetWindow() {
+    if(!TargetWindowRunning) {
+        std::thread* thrd = new std::thread(TargetWindow_WorkerThread);
+        subThreadItem item { thrd, ST_TargetWindow, nullptr };
         subThreads.push_back(item);
-    } else SetForegroundWindow(s_findWindowHWND);
+    } else SetForegroundWindow(s_targetWindowHWND);
     return 0;
 }

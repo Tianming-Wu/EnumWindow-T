@@ -34,7 +34,7 @@
 #define IDW_EXPAND_ALL                      2012
 #define IDW_COLLAPSE_ALL                    2013
 
-#define IDW_FINDWINDOW                      2022
+#define IDW_TARGETWINDOW                    2022
 #define IDW_SEARCHWINDOW                    2023
 
 #define IDW_BLACKLIST_SETTINGS              2031

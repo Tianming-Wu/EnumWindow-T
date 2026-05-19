@@ -43,7 +43,7 @@ template<typename _T> [[deprecated]]
     }
 
 enum SubType {
-    ST_Property, ST_FindWindow, ST_SearchWindow, ST_OutlineWindow
+    ST_Property, ST_TargetWindow, ST_SearchWindow, ST_OutlineWindow
 };
 
 struct subThreadItem {

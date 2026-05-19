@@ -14,7 +14,7 @@ set(PROJECT_SOURCES
     toolset.h toolset.cpp
     config.h config.cpp
     PropertyWindow.hpp PropertyWindowIDs.h PropertyWindow.cpp
-    FindWindow.hpp FindWindowIDs.h FindWindow.cpp
+    TargetWindow.hpp TargetWindowIDs.h TargetWindow.cpp
     SearchWindow.hpp SearchWindowIDs.hpp SearchWindow.cpp
     RMenuProcessor.hpp RMenuProcessor.cpp
     WindowOperations.hpp

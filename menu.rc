@@ -44,7 +44,7 @@ IDW_MENU MENU
         MENUITEM "全部展开(&E)", IDW_EXPAND_ALL
         MENUITEM "全部折叠(&C)", IDW_COLLAPSE_ALL
     }
-    MENUITEM "查找窗口(&F)", IDW_FINDWINDOW
+    MENUITEM "选择窗口(&F)", IDW_TARGETWINDOW
     MENUITEM "搜索窗口(&S)", IDW_SEARCHWINDOW
     POPUP "忽略(&I)"
     {

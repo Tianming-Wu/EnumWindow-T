@@ -14,7 +14,7 @@
 #include "about.hpp"
 
 #include "PropertyWindow.hpp"
-#include "FindWindow.hpp"
+#include "TargetWindow.hpp"
 #include "SearchWindow.hpp"
 #include "PublicDefs.hpp"
 
@@ -139,8 +139,8 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         CheckMenuItem(hWindowMenu, IDW_BLACKLIST_ENABLED, Config.EnableBlockList?(MF_CHECKED):(MF_UNCHECKED));
         break;
     
-    case IDW_FINDWINDOW:
-        StartFindWindow();
+    case IDW_TARGETWINDOW:
+        StartTargetWindow();
         break;
     case IDW_SEARCHWINDOW:
         StartSearchWindow();
