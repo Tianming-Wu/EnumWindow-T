@@ -36,6 +36,8 @@ public:
     struct {
         bool AutoUpdateOnEdit = true;
     } SearchWindow;
+
+    // bool AutoEnablePluginSystem = false;
 };
 
 extern _Config Config;

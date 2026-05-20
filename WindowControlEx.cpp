@@ -150,6 +150,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // Load the right click menu
         HMENU hRightMenu = LoadMenu(((LPCREATESTRUCT)lParam)->hInstance, /*szMenuName*/ MAKEINTRESOURCE(IDM_MAINMENU));
         hPopupMenu = GetSubMenu(hRightMenu, 0);
+
+        // 如果当前未提权，则在菜单栏右侧添加一个菜单项作为提权入口
+        if(!IsProcessElevated()) {
+            AppendMenu(hWindowMenu, MF_STRING | MF_RIGHTJUSTIFY, IDW_ELEVATE, TEXT("提权(&E)"));
+            DrawMenuBar(hwnd);
+        }
     }
     break;
     case WM_ADDROOT: {

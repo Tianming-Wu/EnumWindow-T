@@ -18,6 +18,8 @@
 #include "SearchWindow.hpp"
 #include "PublicDefs.hpp"
 
+#include <shellapi.h>
+
 //#include "WindowOperations.hpp"
 #include "ScanThread.hpp"
 #include "toolset.h"
@@ -154,6 +156,21 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case IDW_REFRESHLIST:
         BeginScan();
         break;
+    case IDW_ELEVATE:
+    {
+        CHAR path[MAX_PATH] = {0};
+        if(GetModuleFileNameA(NULL, path, MAX_PATH)) {
+            HINSTANCE r = ShellExecuteA(NULL, "runas", path, NULL, NULL, SW_SHOWNORMAL);
+            if((INT_PTR)r > 32) {
+                HWND mainWnd = GetAncestor(hTreeView, GA_ROOT);
+                if(mainWnd) PostMessage(mainWnd, WM_CLOSE, 0, 0);
+                else ExitProcess(0);
+            } else {
+                MessageBox(hwnd, "提权被取消或失败", "信息", MB_ICONINFORMATION | MB_OK);
+            }
+        }
+        break;
+    }
     case IDW_AUTOUPDATE:
     {
         Config.PropertyWindow.AutoUpdateEnabled = ! Config.PropertyWindow.AutoUpdateEnabled;

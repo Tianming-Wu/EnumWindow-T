@@ -276,8 +276,18 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         std::string psPath, psImage;
         psPath.resize(Config.MaxPathLength); psImage.resize(Config.MaxPathLength);
         HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, targetWindow.pid);
-        auto len = GetModuleFileNameEx(hProcess, NULL, (LPSTR)psPath.data(), (DWORD)Config.MaxPathLength);
-        GetProcessImageFileName(hProcess, (LPSTR)psImage.data(), (DWORD)Config.MaxPathLength);
+        if(hProcess) {
+            DWORD len = GetModuleFileNameExA(hProcess, NULL, (LPSTR)psPath.data(), (DWORD)Config.MaxPathLength);
+            if(len > 0) psPath.resize(len); else psPath.clear();
+
+            DWORD len2 = GetProcessImageFileNameA(hProcess, (LPSTR)psImage.data(), (DWORD)Config.MaxPathLength);
+            if(len2 > 0) psImage.resize(len2); else psImage.clear();
+
+            CloseHandle(hProcess);
+        } else {
+            psPath = "<access denied or process exited>";
+            psImage = "<access denied or process exited>";
+        }
 
         SetWindowText(ctrls[pw_psPathEditHwnd], psPath.c_str());
         SetWindowText(ctrls[pw_psImageEditHwnd], psImage.c_str());

@@ -1,4 +1,6 @@
 #include "toolset.h"
+#include <shellapi.h>
+#include <winternl.h>
 #include <functional>
 
 
@@ -174,4 +176,16 @@ bool FocusControlAcrossThreads(HWND controlHwnd)
         AttachThreadInput(currentThreadId, targetThreadId, FALSE);
     }
     return true;
+}
+
+bool IsProcessElevated()
+{
+    HANDLE token = nullptr;
+    if(!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) return false;
+    TOKEN_ELEVATION elevation;
+    DWORD retSize = 0;
+    BOOL ok = GetTokenInformation(token, TokenElevation, &elevation, sizeof(elevation), &retSize);
+    CloseHandle(token);
+    if(!ok) return false;
+    return elevation.TokenIsElevated != 0;
 }

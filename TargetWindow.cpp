@@ -1,4 +1,7 @@
-#pragma once
+/*
+    选择窗口模块
+    这个模块可以让用户通过拖动光标选择一个目标窗口，并实时显示窗口的基本信息。
+*/
 
 #include <windows.h>
 #include <CommCtrl.h>
@@ -17,11 +20,11 @@ extern HWND hTreeView;
 //extern HANDLE g_quitevent;
 extern bool gb_quitEvent;
 extern HFONT hPublicFont;
+extern HWND main_hwnd;
 
 bool TargetWindowRunning = false;
 HWND s_targetWindowHWND = nullptr;
 
-extern HWND main_hwnd;
 
 void TrackMouseLeave(HWND hwnd)
 {

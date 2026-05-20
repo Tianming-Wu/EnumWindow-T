@@ -1,0 +1,10 @@
+[Plugin]
+Type=specialized
+Name=TinyTitleBar
+Author=Tianming Wu
+Description=给窗口显示一个微型标题栏，以占用尽可能小的屏幕空间
+Version=1.0.0.1
+
+[Parameter]
+Count=1
+Param1=auto:hwnd|HWND||目标窗口的句柄

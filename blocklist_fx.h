@@ -34,10 +34,10 @@ public:
     inline bool hasTitle(const std::string& item) { return exists(item, BLWindowTitle) || exists(item, temp_BLWindowTitle); }
 
 private:
-    bool exists(const std::string& item, const Json::Value::Members& list);
-    bool coexists(const std::string& item, const Json::Value::Members& list);
-    void add(const std::string& item, std::vector<std::string>& list);
-    void remove(const std::string& item, Json::Value::Members& list);
+    bool exists(const std::string& item, const Json::Value::Members& list); // 规则存在
+    bool coexists(const std::string& item, const Json::Value::Members& list); // 规则存在（部分匹配）
+    void add(const std::string& item, std::vector<std::string>& list); // 添加规则
+    void remove(const std::string& item, Json::Value::Members& list); // 删除规则
 
     void parseBlockList();
     void updateBlockList();

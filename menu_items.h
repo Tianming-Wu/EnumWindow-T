@@ -37,6 +37,8 @@
 #define IDW_TARGETWINDOW                    2022
 #define IDW_SEARCHWINDOW                    2023
 
+#define IDW_ELEVATE                         2099
+
 #define IDW_BLACKLIST_SETTINGS              2031
 #define IDW_BLACKLIST_ENABLED               2032
 

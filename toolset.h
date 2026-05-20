@@ -43,7 +43,7 @@ template<typename _T> [[deprecated]]
     }
 
 enum SubType {
-    ST_Property, ST_TargetWindow, ST_SearchWindow, ST_OutlineWindow
+    ST_Property, ST_TargetWindow, ST_SearchWindow, ST_EventSenderWindow, ST_OutlineWindow
 };
 
 struct subThreadItem {
@@ -66,3 +66,6 @@ extern std::vector<subWindowItem> subWindows;
 void CloseAllSubWindows();
 // 等待所有子线程退出
 void CloseAllThreads();
+
+// 返回当前进程是否以管理员权限运行
+bool IsProcessElevated();

@@ -7,6 +7,8 @@ project(
     LANGUAGES CXX
 )
 
+option(BUILD_PLUGIN_SYSTEM "Build the plugin subsystem" ON)
+
 set(PROJECT_SOURCES
     WindowControlEx.cpp WindowControlEx.h
     ScanThread.hpp ScanThread.cpp
@@ -48,3 +50,11 @@ add_executable(WindowControlEx ${PROJECT_SOURCES})
 target_link_libraries(WindowControlEx comctl32 jsoncpp_static psapi)
 
 set_target_properties(WindowControlEx PROPERTIES WIN32_EXECUTABLE TRUE)
+
+
+if(BUILD_PLUGIN_SYSTEM)
+    add_library(PluginLoader SHARED
+        Plugins/PluginLoader.cpp
+    )
+    target_link_libraries(PluginLoader comctl32 psapi)
+endif()
