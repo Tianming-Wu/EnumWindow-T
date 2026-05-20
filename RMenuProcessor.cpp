@@ -2,6 +2,7 @@
     This file handles the right click menu and the static menubar.
 */
 #pragma once
+#include "RMenuProcessor.hpp"
 
 #include <windows.h>
 #include <CommCtrl.h>
@@ -9,7 +10,7 @@
 
 #include "menu_items.h"
 #include "config.h"
-#include "blocklist_fx.h"
+#include "RuleSet.hpp"
 
 #include "about.hpp"
 
@@ -47,9 +48,14 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     case IDM_PROPERTY:
     {
         HWND hwndHandle;
-        if((hwndHandle = GetItemHandle(hTreeView)) != nullptr)
-            StartPropertyWindow(hwndHandle);
-        else MessageBox(hwnd, "无法从列表项提取窗口句柄", "错误", MB_ICONERROR);
+        if((hwndHandle = GetItemHandle(hTreeView)) != nullptr) {
+            if (IsWindow(hwndHandle)) {
+                StartPropertyWindow(hwndHandle);
+            } else {
+                MessageBox(hwnd, "窗口已经失效。", "信息", MB_ICONINFORMATION);
+            }
+        }
+        else MessageBox(hwnd, "无法从列表项提取窗口句柄。", "错误", MB_ICONERROR);
         break;
     }
     case IDM_SHOWPOSITION:
@@ -77,6 +83,7 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     {
         std::function<void(HTREEITEM, UINT)> wtP_ = 
             [&](HTREEITEM hItem, UINT flag) {
+                if(hItem == NULL) return;
                 HTREEITEM hChild = TreeView_GetChild(hTreeView, hItem);
                 while (hChild != NULL)
                 {
@@ -86,7 +93,9 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 TreeView_Expand(hTreeView, hItem, flag);
             };
         HTREEITEM hFocusedItem = TreeView_GetNextItem(hTreeView, NULL, TVGN_CARET);
-        wtP_(hFocusedItem, (LOWORD(wParam)==IDM_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
+        if(hFocusedItem == NULL) hFocusedItem = TreeView_GetRoot(hTreeView);
+        if(hFocusedItem != NULL)
+            wtP_(hFocusedItem, (LOWORD(wParam)==IDM_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
         break;
     }
 
@@ -100,13 +109,13 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         CloseWindow(GetItemHandle(hTreeView)); break;
 
     case IDM_IGNORE_CLASS_SINGLETIME:
-        BlockList.addClass(GetWindowClass(GetItemHandle(hTreeView))); break; // BeginScan(); ? 或者尝试增量移除此窗口。
+        RuleSet.insertTempRule(GetWindowClass(GetItemHandle(hTreeView)), PatternKey::Class); break; // BeginScan(); ? 或者尝试增量移除此窗口。
     case IDM_IGNORE_CLASS_PERMANENT:
-        BlockList.addClassPermenant(GetWindowClass(GetItemHandle(hTreeView))); break;
+        RuleSet.insertRule(GetWindowClass(GetItemHandle(hTreeView)), PatternKey::Class); break;
     case IDM_IGNORE_TITLE_SINGLETIME:
-        BlockList.addTitle(_GetWindowText(GetItemHandle(hTreeView))); break;
+        RuleSet.insertTempRule(_GetWindowText(GetItemHandle(hTreeView)), PatternKey::Title); break;
     case IDM_IGNORE_TITLE_PERMANENT:
-        BlockList.addTitlePermenant(_GetWindowText(GetItemHandle(hTreeView))); break;
+        RuleSet.insertRule(_GetWindowText(GetItemHandle(hTreeView)), PatternKey::Title); break;
     
 
     // ------ 菜单栏 ------
@@ -126,16 +135,29 @@ LRESULT CALLBACK RMenuProcessor(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 }
                 TreeView_Expand(hTreeView, hItem, flag);
             };
-        // HTREEITEM hFocusedItem = TreeView_GetNextItem(hTreeView, NULL, TVGN_CARET);
+        // 遍历所有根节点，分别进行展开/折叠
         HTREEITEM hRoot = TreeView_GetRoot(hTreeView);
         if(hRoot != NULL) {
-            wtP_(hRoot, (LOWORD(wParam)==IDW_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
+            HTREEITEM cur = hRoot;
+            while(cur != NULL) {
+                wtP_(cur, (LOWORD(wParam)==IDW_EXPAND_ALL)?(TVE_EXPAND):(TVE_COLLAPSE));
+                cur = TreeView_GetNextSibling(hTreeView, cur);
+            }
         } else {
             MessageBox(hwnd, "错误: hRoot is NULL", "错误", MB_ICONHAND|MB_OK);
         }
         break;
     }
 
+    case IDW_BLACKLIST_SETTINGS:
+        break;
+    case IDW_BLACKLIST_RESET: {
+        int ConfirmResult = MessageBox(hwnd, "确定要重置黑名单吗？这将清除所有自定义规则。", "确认", MB_ICONQUESTION | MB_YESNO);
+        if(ConfirmResult == IDYES) {
+            RuleSet.resetRuleSet();
+        }
+        break;
+    }
     case IDW_BLACKLIST_ENABLED:
         Config.EnableBlockList = ! Config.EnableBlockList;
         CheckMenuItem(hWindowMenu, IDW_BLACKLIST_ENABLED, Config.EnableBlockList?(MF_CHECKED):(MF_UNCHECKED));

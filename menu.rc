@@ -49,6 +49,7 @@ IDW_MENU MENU
     POPUP "忽略(&I)"
     {
         MENUITEM "黑名单设置(&B)", IDW_BLACKLIST_SETTINGS, GRAYED
+        MENUITEM "重置黑名单(&R)", IDW_BLACKLIST_RESET
         MENUITEM SEPARATOR
         MENUITEM "启用黑名单(&T)", IDW_BLACKLIST_ENABLED
     }

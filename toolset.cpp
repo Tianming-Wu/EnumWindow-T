@@ -189,3 +189,35 @@ bool IsProcessElevated()
     if(!ok) return false;
     return elevation.TokenIsElevated != 0;
 }
+
+std::string TranslateLastError() {
+    DWORD errorCode = GetLastError();
+    if (errorCode == 0) return ""; // 成功，没有错误消息。
+    LPSTR messageBuffer = nullptr;
+    DWORD size = FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR)&messageBuffer, 0, nullptr
+    );
+
+    std::string result;
+    if (size > 0 && messageBuffer != nullptr) {
+        result.assign(messageBuffer, size);
+        while (!result.empty() &&  (result.back() == '\n' || result.back() == '\r'))
+            result.pop_back();
+    } else result = "";
+    if (messageBuffer != nullptr) LocalFree(messageBuffer);
+    return result;
+}
+
+fs::path getExecutableDir() {
+    char exePath[MAX_PATH];
+    if (GetModuleFileNameA(NULL, exePath, MAX_PATH) != 0) {
+        std::string pathStr = std::string(exePath);
+        size_t lastSlash = pathStr.find_last_of("\\/");
+        if (lastSlash != std::string::npos) {
+            return pathStr.substr(0, lastSlash);
+        }
+    }
+    return ""; // 获取路径失败，返回空字符串。
+}

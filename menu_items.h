@@ -40,7 +40,8 @@
 #define IDW_ELEVATE                         2099
 
 #define IDW_BLACKLIST_SETTINGS              2031
-#define IDW_BLACKLIST_ENABLED               2032
+#define IDW_BLACKLIST_RESET                 2032
+#define IDW_BLACKLIST_ENABLED               2033
 
 #define IDW_PROPERTY                        2041
 

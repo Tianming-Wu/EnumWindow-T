@@ -12,7 +12,7 @@ option(BUILD_PLUGIN_SYSTEM "Build the plugin subsystem" ON)
 set(PROJECT_SOURCES
     WindowControlEx.cpp WindowControlEx.h
     ScanThread.hpp ScanThread.cpp
-    blocklist_fx.h blocklist_fx.cpp
+    RuleSet.hpp RuleSet.cpp
     toolset.h toolset.cpp
     config.h config.cpp
     PropertyWindow.hpp PropertyWindowIDs.h PropertyWindow.cpp
@@ -46,9 +46,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(jsoncpp)
 
 add_executable(WindowControlEx ${PROJECT_SOURCES})
-
 target_link_libraries(WindowControlEx comctl32 jsoncpp_static psapi)
-
 set_target_properties(WindowControlEx PROPERTIES WIN32_EXECUTABLE TRUE)
 
 

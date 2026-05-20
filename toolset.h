@@ -7,6 +7,8 @@
 #include <vector>
 #include <thread>
 #include <map>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #define DTS_DEFAULT (DT_LEFT|DT_SINGLELINE|DT_NOCLIP)
 
@@ -43,7 +45,8 @@ template<typename _T> [[deprecated]]
     }
 
 enum SubType {
-    ST_Property, ST_TargetWindow, ST_SearchWindow, ST_EventSenderWindow, ST_OutlineWindow
+    ST_Property, ST_TargetWindow, ST_SearchWindow, ST_EventSenderWindow, ST_OutlineWindow,
+    ST_External // 用于标识动态加载插件创建的窗口
 };
 
 struct subThreadItem {
@@ -69,3 +72,6 @@ void CloseAllThreads();
 
 // 返回当前进程是否以管理员权限运行
 bool IsProcessElevated();
+
+std::string TranslateLastError();
+fs::path getExecutableDir();

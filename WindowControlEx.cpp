@@ -89,7 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpWCmdLin
     SendMessage(main_hwnd, WM_SETFONT, WPARAM(hPublicFont), TRUE);
     
     Config.load(); // 加载配置
-    BlockList.load(); // 加载黑名单
+    RuleSet.load(); // 加载黑名单 (全量)
 
     //g_quitevent = CreateEventA(NULL, FALSE, FALSE, NULL); // 配置全局线程退出信号
 
@@ -106,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpWCmdLin
 
     //SetEvent(g_quitevent); // 发送全局子进程进程退出消息
 
-    BlockList.save(); // 保存黑名单
+    RuleSet.save(); // 保存黑名单
     Config.save(); // 保存配置
 
     gb_quitEvent = true;

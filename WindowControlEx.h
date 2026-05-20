@@ -13,7 +13,7 @@
 
 #include "menu_items.h"
 #include "toolset.h"
-#include "blocklist_fx.h"
+#include "RuleSet.hpp"
 
 #define WM_INITIALIZE WM_USER+7
 

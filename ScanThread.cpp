@@ -4,7 +4,7 @@
 #include <sstream>
 #include <thread>
 
-#include "blocklist_fx.h"
+#include "RuleSet.hpp"
 #include "config.h"
 
 extern bool Scanning;
@@ -50,7 +50,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
     GetClassName(hwnd, className, sizeof(className));
     GetWindowText(hwnd, windowTitle, sizeof(windowTitle));
 
-    if ( !Config.EnableBlockList || ((!BlockList.hasClass(className)) && (!BlockList.hasTitle(windowTitle))) ) {
+    if ( !Config.EnableBlockList || !RuleSet.match(className, windowTitle) ) {
         HANDLE updevent = CreateEventA(NULL, FALSE, FALSE, NULL);
 
         std::stringstream sstr; std::string tstr;
