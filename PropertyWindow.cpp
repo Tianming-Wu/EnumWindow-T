@@ -204,18 +204,18 @@ LRESULT CALLBACK PropertyWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         }
 
         bool cbSysMenu = (targetWindow.windowLong & WS_SYSMENU) != 0;
-        if(cbSysMenu) SendMessage(ctrls[pw_cbSysMenu], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbSysMenu], BM_SETCHECK, cbSysMenu ? BST_CHECKED : BST_UNCHECKED, 0);
         bool cbVisible = (targetWindow.windowLong & WS_VISIBLE) != 0;
-        if(cbVisible) SendMessage(ctrls[pw_cbVisible], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbVisible], BM_SETCHECK, cbVisible ? BST_CHECKED : BST_UNCHECKED, 0);
         bool cbMinBox = (targetWindow.windowLong & WS_MINIMIZEBOX) != 0;
-        if(cbMinBox) SendMessage(ctrls[pw_cbMinimizeBox], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbMinimizeBox], BM_SETCHECK, cbMinBox ? BST_CHECKED : BST_UNCHECKED, 0);
         bool cbMaxBox = (targetWindow.windowLong & WS_MAXIMIZEBOX) != 0;
-        if(cbMaxBox) SendMessage(ctrls[pw_cbMaximizeBox], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbMaximizeBox], BM_SETCHECK, cbMaxBox ? BST_CHECKED : BST_UNCHECKED, 0);
         bool cbSizeBox = (targetWindow.windowLong & WS_SIZEBOX) != 0;
-        if(cbSizeBox) SendMessage(ctrls[pw_cbSizeBox], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbSizeBox], BM_SETCHECK, cbSizeBox ? BST_CHECKED : BST_UNCHECKED, 0);
 
         bool cbTopMost = (targetWindow.windowExLong & WS_EX_TOPMOST) != 0;
-        if(cbTopMost) SendMessage(ctrls[pw_cbTopMost], BM_SETCHECK, BST_CHECKED, 0);
+        SendMessage(ctrls[pw_cbTopMost], BM_SETCHECK, cbTopMost ? BST_CHECKED : BST_UNCHECKED, 0);
 
         flag_AgainstChange = false;
         break;
