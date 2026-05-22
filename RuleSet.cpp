@@ -58,14 +58,18 @@ void _Filter::save()
 
 bool _Filter::match(const std::string &windowClass, const std::string &windowTitle)
 {
-    // 检查规则集
-    for (const FilterRule& rule : ruleSet) {
+    // 检查规则集，如果含有匹配则返回 true。
+    // 由于这个规则集并没有动作的概念（只要匹配就是确认过滤），所以顺序并不重要，
+    // 只会在大量规则时对性能有影响。性能影响很大程度上可以通过优化 Regex 规避。
+
+    // 检查临时规则集
+    for (const FilterRule& rule : tempRuleSet) {
         const std::string& targetString = (rule.key == PatternKey::Class) ? (windowClass) : (windowTitle);
         if (rule.match(targetString)) return true; 
     }
 
-    // 检查临时规则集
-    for (const FilterRule& rule : tempRuleSet) {
+    // 检查规则集
+    for (const FilterRule& rule : ruleSet) {
         const std::string& targetString = (rule.key == PatternKey::Class) ? (windowClass) : (windowTitle);
         if (rule.match(targetString)) return true; 
     }
